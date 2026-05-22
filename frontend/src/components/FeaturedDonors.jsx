@@ -1,7 +1,8 @@
 import { useRef, useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaChevronLeft, FaChevronRight, FaArrowRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import DonorCard from "./DonorCard";
+import DonorCardSkeleton from "./DonorCardSkeleton";
 import toast from "react-hot-toast";
 import { API_BASE_URL } from "../config/api";
 
@@ -80,8 +81,10 @@ const FeaturedDonors = () => {
           }
         `}</style>
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-red-600"></div>
+          <div className="flex space-x-6 overflow-x-auto pb-4 custom-scrollbar">
+            {[1, 2, 3].map((i) => (
+              <DonorCardSkeleton key={i} />
+            ))}
           </div>
         ) : donors.length === 0 ? (
           <div className="text-center py-20 text-gray-400">

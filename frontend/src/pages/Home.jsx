@@ -1,15 +1,39 @@
-import { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import StatsSection from "../components/StatsSection";
 import SearchForm from "../components/SearchForm";
 import FeaturedDonors from "../components/FeaturedDonors";
 import HowItWorks from "../components/HowItWorks";
 import Banner from "../components/Banner";
 import Footer from "../components/Footer";
+import Loading from "../components/Loading";
 import { FaHeart } from "react-icons/fa";
 
 const Home = () => {
+  const [isLoading, setIsLoading] = useState(true);
   const canvasRef = useRef(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const shouldScroll = sessionStorage.getItem("scrollToSearch");
+    if (shouldScroll === "true") {
+      sessionStorage.removeItem("scrollToSearch");
+      const timeoutId = setTimeout(() => {
+        const el = document.getElementById("search-donor-form");
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 200);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [location]);
 
   useEffect(() => {
     const c = canvasRef.current;
@@ -132,6 +156,10 @@ const Home = () => {
       cancelAnimationFrame(animationFrameId);
     };
   }, []);
+
+  if (isLoading) {
+    return <Loading />;
+  }
 
   return (
     <div>

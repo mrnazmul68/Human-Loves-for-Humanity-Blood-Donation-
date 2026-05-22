@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import DonorCard from "../components/DonorCard";
+import DonorCardSkeleton from "../components/DonorCardSkeleton";
 import toast from "react-hot-toast";
 import { API_BASE_URL } from "../config/api";
 
@@ -91,8 +92,10 @@ const AllDonors = () => {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-red-600"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <DonorCardSkeleton key={i} />
+            ))}
           </div>
         ) : (
           <>

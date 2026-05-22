@@ -58,8 +58,8 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const navLinkClass = ({ isActive }) =>
-    `${isActive ? "text-red-500 underline underline-offset-4" : "text-gray-300"} hover:text-red-200 transition-colors`;
+  const navLinkClass = ({ isActive, isMobile }) =>
+    `${isActive ? "text-red-500" : "text-gray-300"} hover:text-red-200 transition-colors ${!isMobile && isActive ? "underline underline-offset-4" : ""}`;
 
   return (
     <nav
@@ -240,7 +240,7 @@ const Navbar = () => {
                 handleNavClick(e, "/");
                 setIsMobileMenuOpen(false);
               }}
-              className={navLinkClass + " block py-2 text-lg"}
+              className={({ isActive }) => navLinkClass({ isActive, isMobile: true }) + " block py-2 text-lg"}
             >
               Home
             </NavLink>
@@ -265,7 +265,7 @@ const Navbar = () => {
                 handleNavClick(e, "/all-donors");
                 setIsMobileMenuOpen(false);
               }}
-              className={navLinkClass + " block py-2 text-lg"}
+              className={({ isActive }) => navLinkClass({ isActive, isMobile: true }) + " block py-2 text-lg"}
             >
               All Donors
             </NavLink>
@@ -275,7 +275,7 @@ const Navbar = () => {
                 handleNavClick(e, "/about");
                 setIsMobileMenuOpen(false);
               }}
-              className={navLinkClass + " block py-2 text-lg"}
+              className={({ isActive }) => navLinkClass({ isActive, isMobile: true }) + " block py-2 text-lg"}
             >
               About
             </NavLink>
