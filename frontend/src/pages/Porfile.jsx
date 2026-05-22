@@ -76,6 +76,7 @@ const MatomaProfile = () => {
         const user = JSON.parse(storedUser);
         try {
           const res = await fetch(`${API_BASE_URL}/api/users/${user.id}`);
+          if (!res.ok) throw new Error("Failed to fetch");
           const data = await res.json();
           if (data.success) {
             setCurrentUser(data.user);
@@ -200,6 +201,17 @@ const MatomaProfile = () => {
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
+      
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload a valid image");
+        return;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image must be under 5MB");
+        return;
+      }
+      
       setTempImageSrc(URL.createObjectURL(file));
       setShowCropModal(true);
       setCrop({ x: 0, y: 0 });
@@ -220,7 +232,7 @@ const MatomaProfile = () => {
     const image = await createImage(imageSrc);
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    const targetSize = 400;
+    const targetSize = 300;
 
     canvas.width = targetSize;
     canvas.height = targetSize;
@@ -250,6 +262,11 @@ const MatomaProfile = () => {
 
   const handleSaveCroppedImage = async () => {
     try {
+      if (!croppedAreaPixels) {
+        toast.error("Please crop the image properly");
+        return;
+      }
+      
       const croppedBlob = await getCroppedImg(tempImageSrc, croppedAreaPixels);
       const croppedFile = new File([croppedBlob], 'cropped-profile.jpg', { type: 'image/jpeg' });
       
@@ -293,6 +310,10 @@ const MatomaProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.upozila && searchTerm) {
+      setFormData((prev) => ({ ...prev, upozila: searchTerm }));
+    }
 
     if (!validateDonorFields()) return;
 
@@ -408,7 +429,11 @@ const MatomaProfile = () => {
             </div>
             <div className="flex gap-4">
               <button
-                onClick={() => setShowCropModal(false)}
+                onClick={() => {
+                  if (tempImageSrc) URL.revokeObjectURL(tempImageSrc);
+                  setShowCropModal(false);
+                  setTempImageSrc(null);
+                }}
                 className="flex-1 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl font-semibold transition-colors"
               >
                 Cancel
