@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+
+# Environment Variables
+.env
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Production builds
+dist/
+build/

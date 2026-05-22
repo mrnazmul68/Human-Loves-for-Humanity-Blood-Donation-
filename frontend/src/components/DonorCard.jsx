@@ -1,0 +1,79 @@
+import { FaPhoneAlt, FaMapMarkerAlt, FaUser, FaWhatsapp } from "react-icons/fa";
+import toast from "react-hot-toast";
+
+const DonorCard = ({ donor }) => {
+  const handleBookNow = () => {
+    const phone = donor.phone || donor.mobile;
+    if (!phone) {
+      toast.error("No phone number available!");
+      return;
+    }
+
+    const cleanPhone = phone.replace(/\D/g, "");
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=Hi%20${encodeURIComponent(donor.name)}%2C%20I%20need%20blood%20urgently.%20Please%20help!`;
+    window.open(whatsappUrl, "_blank");
+    toast.success("Opening WhatsApp...");
+  };
+
+  return (
+    <div className="relative group min-w-[280px]">
+      {/* Glow Border Effect */}
+      <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-[#E11D48]/20 to-transparent blur opacity-0 group-hover:opacity-100 transition duration-300"></div>
+
+      {/* Card */}
+      <div className="relative bg-zinc-900 backdrop-blur-lg border border-zinc-800 p-6 rounded-2xl shadow-xl transition-all duration-300  group-hover:border-[#E11D48]/40">
+        {/* Top Section */}
+        <div className="flex items-center gap-4 mb-5">
+          <img
+            src={
+              donor.profilePicture ||
+              donor.image ||
+              `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                donor.name,
+              )}&background=E11D48&color=fff`
+            }
+            alt={donor.name}
+            className="h-16 w-16 rounded-full object-cover border-2 border-[#E11D48]"
+          />
+
+          <div>
+            <h3 className="text-lg font-bold text-white">{donor.name}</h3>
+
+            {/* Blood Badge */}
+            <span className="inline-block mt-1 px-3 py-1 text-sm font-semibold bg-[#E11D48]/20 text-[#E11D48] rounded-full">
+              {donor.bloodGroup}
+            </span>
+          </div>
+        </div>
+
+        {/* Info Section */}
+        <div className="space-y-3 text-sm text-gray-400">
+          <div className="flex items-center gap-2">
+            <FaMapMarkerAlt className="text-[#E11D48]" />
+            <span>{donor.upazila || donor.upozila}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <FaPhoneAlt className="text-[#E11D48]" />
+            <span>{donor.phone || donor.mobile}</span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <FaUser className="text-[#E11D48]" />
+            <span>{donor.age} years old</span>
+          </div>
+        </div>
+
+        {/* Button */}
+        <button
+          onClick={handleBookNow}
+          className="w-full mt-6 py-3 hover:scale-110  duration-300 rounded-lg font-semibold text-white  hover:opacity-90 transition-all shadow-md border-2 border-[#E11D48]/50 flex items-center justify-center gap-2"
+        >
+          <FaWhatsapp /> Book Now
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default DonorCard;
