@@ -14,12 +14,25 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("currentUser");
-    const storedComplete = localStorage.getItem("isProfileComplete");
-    if (storedUser) {
-      setCurrentUser(JSON.parse(storedUser));
-      setIsProfileComplete(storedComplete ? JSON.parse(storedComplete) : true);
-    }
+    const updateUser = () => {
+      const storedUser = localStorage.getItem("currentUser");
+      const storedComplete = localStorage.getItem("isProfileComplete");
+      if (storedUser) {
+        setCurrentUser(JSON.parse(storedUser));
+        setIsProfileComplete(storedComplete ? JSON.parse(storedComplete) : true);
+      } else {
+        setCurrentUser(null);
+      }
+    };
+
+    updateUser();
+    window.addEventListener("storage", updateUser);
+    
+    const checkInterval = setInterval(updateUser, 500);
+    return () => {
+      window.removeEventListener("storage", updateUser);
+      clearInterval(checkInterval);
+    };
   }, []);
 
   const handleNavClick = (e, href) => {
