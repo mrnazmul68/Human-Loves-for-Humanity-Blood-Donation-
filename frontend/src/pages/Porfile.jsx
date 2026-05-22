@@ -47,6 +47,14 @@ const MatomaProfile = () => {
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    return () => {
+      if (formData.profilePicture?.startsWith("blob:")) {
+        URL.revokeObjectURL(formData.profilePicture);
+      }
+    };
+  }, [formData.profilePicture]);
+
   const checkProfileComplete = (data) => {
     if (data.isDonor === "donor") {
       return (
@@ -61,31 +69,6 @@ const MatomaProfile = () => {
     return true;
   };
 
-  useBeforeUnload(
-    useCallback(
-      (event) => {
-        if (isDirty) {
-          event.preventDefault();
-          event.returnValue = "";
-          return "";
-        }
-      },
-      [isDirty],
-    ),
-  );
-
-  useEffect(() => {
-    const handleBeforeUnload = (e) => {
-      if (isDirty) {
-        e.preventDefault();
-        e.returnValue = "";
-        return "";
-      }
-    };
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [isDirty]);
-
   useEffect(() => {
     const fetchUser = async () => {
       const storedUser = localStorage.getItem("currentUser");
@@ -96,11 +79,11 @@ const MatomaProfile = () => {
           const data = await res.json();
           if (data.success) {
             setCurrentUser(data.user);
-            setFormData({
-              ...formData,
+            setFormData((prev) => ({
+              ...prev,
               ...data.user,
               profilePicture: data.user.profilePicture,
-            });
+            }));
             setSearchTerm(data.user.upozila || "");
             setIsProfileComplete(checkProfileComplete(data.user));
             localStorage.setItem("currentUser", JSON.stringify(data.user));
@@ -108,11 +91,11 @@ const MatomaProfile = () => {
         } catch (err) {
           console.error("Failed to fetch user:", err);
           setCurrentUser(user);
-          setFormData({
-            ...formData,
+          setFormData((prev) => ({
+            ...prev,
             ...user,
             profilePicture: user.profilePicture,
-          });
+          }));
           setSearchTerm(user.upozila || "");
           setIsProfileComplete(checkProfileComplete(user));
         }
@@ -187,7 +170,7 @@ const MatomaProfile = () => {
     const handleBeforeNavigate = (e) => {
       if (isDirty && formData.isDonor === "donor") {
         const answer = window.confirm(
-          "You have unsaved changes. Are you sure you want to leave?",
+          "You have unsaved changes. Save changes before leaving?",
         );
         if (!answer) {
           e.preventDefault();
@@ -257,7 +240,7 @@ const MatomaProfile = () => {
     return new Promise((resolve) => {
       canvas.toBlob((blob) => {
         resolve(blob);
-      }, 'image/jpeg', 0.9);
+      }, 'image/jpeg', 0.7);
     });
   };
 
@@ -269,6 +252,8 @@ const MatomaProfile = () => {
     try {
       const croppedBlob = await getCroppedImg(tempImageSrc, croppedAreaPixels);
       const croppedFile = new File([croppedBlob], 'cropped-profile.jpg', { type: 'image/jpeg' });
+      
+      URL.revokeObjectURL(tempImageSrc);
       
       setFormData((prev) => ({
         ...prev,
@@ -516,7 +501,7 @@ const MatomaProfile = () => {
                       <img
                         src={
                           formData.profilePicture.includes('cloudinary')
-                            ? formData.profilePicture.replace('/upload/', '/upload/w_800,q_auto,f_auto/')
+                            ? formData.profilePicture.replace('/upload/', '/upload/w_300,q_auto,f_auto/')
                             : formData.profilePicture
                         }
                         alt="Profile"
