@@ -26,11 +26,13 @@ const DonorCard = ({ donor }) => {
         <div className="flex items-center gap-4 mb-5">
           <img
             src={
-              donor.profilePicture ||
-              donor.image ||
-              `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                donor.name,
-              )}&background=E11D48&color=fff`
+              (donor.profilePicture && donor.profilePicture.includes('cloudinary'))
+                ? donor.profilePicture.replace('/upload/', '/upload/w_800,q_auto,f_auto/')
+                : donor.profilePicture ||
+                  donor.image ||
+                  `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                    donor.name,
+                  )}&background=E11D48&color=fff`
             }
             alt={donor.name}
             className="h-16 w-16 rounded-full object-cover border-2 border-[#E11D48]"

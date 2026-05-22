@@ -514,7 +514,11 @@ const MatomaProfile = () => {
                   <div className="w-40 h-40 rounded-full bg-zinc-800 border-4 border-zinc-700 flex items-center justify-center overflow-hidden">
                     {formData.profilePicture ? (
                       <img
-                        src={formData.profilePicture}
+                        src={
+                          formData.profilePicture.includes('cloudinary')
+                            ? formData.profilePicture.replace('/upload/', '/upload/w_800,q_auto,f_auto/')
+                            : formData.profilePicture
+                        }
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />
