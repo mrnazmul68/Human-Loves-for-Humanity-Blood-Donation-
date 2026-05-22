@@ -39,10 +39,11 @@ const SearchForm = () => {
         <div className="bg-gray-950 border border-gray-800 p-8 rounded-2xl shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label className="block text-sm text-gray-400 mb-2">
+              <label htmlFor="blood-group" className="block text-sm text-gray-400 mb-2">
                 Blood Group
               </label>
               <select
+                id="blood-group"
                 value={selectedBloodGroup}
                 onChange={(e) => setSelectedBloodGroup(e.target.value)}
                 className="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded text-white placeholder-gray-500 focus:outline-none focus:ring-1 focus:ring-[#E11D48] focus:border-[#E11D48]"
@@ -57,11 +58,12 @@ const SearchForm = () => {
             </div>
 
             <div className="relative">
-              <label className="block text-sm text-gray-400 mb-2">
+              <label htmlFor="upazila" className="block text-sm text-gray-400 mb-2">
                 Upazila
               </label>
               <div className="relative">
                 <input
+                  id="upazila"
                   type="text"
                   value={selectedUpazila || searchQuery}
                   onChange={(e) => {

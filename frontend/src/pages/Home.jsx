@@ -191,6 +191,7 @@ const Home = () => {
                   }
                 }}
                 className="px-6 py-3 bg-[#E11D48] text-white active:scale-95 animate-pulse text-base font-semibold rounded-xl hover:bg-[#BE123C] transition-all hover:shadow-lg hover:shadow-[#E11D48]/40 transform hover:-translate-y-1 w-full sm:w-auto text-center"
+                aria-label="Scroll to find blood donor form"
               >
                 Find Blood Donor
               </button>

@@ -53,12 +53,14 @@ const FeaturedDonors = () => {
           <button
             onClick={scrollLeft}
             className="p-3 bg-gray-800 text-white rounded-lg hover:bg-[#E11D48] transition-colors"
+            aria-label="Scroll featured donors left"
           >
             <FaChevronLeft />
           </button>
           <button
             onClick={scrollRight}
             className="p-3 bg-gray-800 text-white rounded-lg hover:bg-[#E11D48] transition-colors"
+            aria-label="Scroll featured donors right"
           >
             <FaChevronRight />
           </button>
