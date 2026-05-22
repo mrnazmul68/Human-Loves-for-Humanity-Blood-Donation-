@@ -95,7 +95,7 @@ const FeaturedDonors = () => {
             ref={scrollRef}
             className="flex space-x-6 overflow-x-auto pb-4 custom-scrollbar"
           >
-            {donors.map((donor) => (
+            {donors.slice(0, 6).map((donor) => (
               <DonorCard key={donor.id} donor={donor} />
             ))}
           </div>

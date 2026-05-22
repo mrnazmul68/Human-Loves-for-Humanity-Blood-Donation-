@@ -10,7 +10,7 @@ const DonorCard = ({ donor }) => {
     }
 
     const cleanPhone = phone.replace(/\D/g, "");
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=Hi%20${encodeURIComponent(donor.name)}%2C%20I%20need%20blood%20urgently.%20Please%20help!`;
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=Are%20you%20available%20to%20donate%20blood.%20I%20need%20Emergency%20blood.`;
     window.open(whatsappUrl, "_blank");
     toast.success("Opening WhatsApp...");
   };
