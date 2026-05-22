@@ -1,13 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { 
   FaUser, FaEnvelope, FaPhone, FaCalendar, FaMapMarkerAlt, 
-  FaTint, FaCamera, FaHeartbeat, FaIdBadge, FaLocationArrow 
+  FaTint, FaCamera, FaHeartbeat, FaIdBadge, FaLocationArrow, FaCheck, FaTimes 
 } from "react-icons/fa";
 import { useNavigate, useBeforeUnload } from "react-router-dom";
 import toast from "react-hot-toast";
 import { API_BASE_URL } from "../config/api";
 import upozilas from "../assets/data/upozilas.js";
 import ProfileSkeleton from "../components/ProfileSkeleton";
+import Cropper from "react-easy-crop";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -39,6 +40,11 @@ const MatomaProfile = () => {
     minutes: 0,
     seconds: 0,
   });
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [tempImageSrc, setTempImageSrc] = useState(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
   const navigate = useNavigate();
 
   const checkProfileComplete = (data) => {
@@ -210,12 +216,71 @@ const MatomaProfile = () => {
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setTempImageSrc(URL.createObjectURL(file));
+      setShowCropModal(true);
+      setCrop({ x: 0, y: 0 });
+      setZoom(1);
+    }
+  };
+
+  const createImage = (url) =>
+    new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener('load', () => resolve(image));
+      image.addEventListener('error', (error) => reject(error));
+      image.setAttribute('crossOrigin', 'anonymous');
+      image.src = url;
+    });
+
+  const getCroppedImg = async (imageSrc, pixelCrop) => {
+    const image = await createImage(imageSrc);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const targetSize = 400;
+
+    canvas.width = targetSize;
+    canvas.height = targetSize;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      targetSize,
+      targetSize
+    );
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, 'image/jpeg', 0.9);
+    });
+  };
+
+  const handleCropComplete = (croppedArea, croppedAreaPixels) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  };
+
+  const handleSaveCroppedImage = async () => {
+    try {
+      const croppedBlob = await getCroppedImg(tempImageSrc, croppedAreaPixels);
+      const croppedFile = new File([croppedBlob], 'cropped-profile.jpg', { type: 'image/jpeg' });
+      
       setFormData((prev) => ({
         ...prev,
-        profilePicture: URL.createObjectURL(e.target.files[0]),
+        profilePicture: URL.createObjectURL(croppedBlob),
       }));
-      setProfilePictureFile(e.target.files[0]);
+      setProfilePictureFile(croppedFile);
       setIsDirty(true);
+      setShowCropModal(false);
+      setTempImageSrc(null);
+    } catch (error) {
+      console.error('Error cropping image:', error);
+      toast.error('Failed to crop image');
     }
   };
 
@@ -319,6 +384,60 @@ const MatomaProfile = () => {
 
   return (
     <div className="min-h-screen bg-black text-white pt-16 pb-12 px-4">
+      {showCropModal && (
+        <div className="fixed inset-0 bg-black/90 z-50 flex flex-col">
+          <div className="flex items-center justify-between p-4 border-b border-zinc-800">
+            <h2 className="text-xl font-semibold">Crop Profile Picture</h2>
+            <button
+              onClick={() => setShowCropModal(false)}
+              className="p-2 hover:bg-zinc-800 rounded-full transition-colors"
+            >
+              <FaTimes className="text-lg" />
+            </button>
+          </div>
+          <div className="flex-1 relative bg-zinc-900">
+            <Cropper
+              image={tempImageSrc}
+              crop={crop}
+              zoom={zoom}
+              aspect={1}
+              cropShape="round"
+              showGrid={false}
+              onCropChange={setCrop}
+              onCropComplete={handleCropComplete}
+              onZoomChange={setZoom}
+            />
+          </div>
+          <div className="p-6 border-t border-zinc-800 bg-zinc-900">
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-zinc-300 mb-2">Zoom</label>
+              <input
+                type="range"
+                min={1}
+                max={3}
+                step={0.1}
+                value={zoom}
+                onChange={(e) => setZoom(parseFloat(e.target.value))}
+                className="w-full accent-red-600"
+              />
+            </div>
+            <div className="flex gap-4">
+              <button
+                onClick={() => setShowCropModal(false)}
+                className="flex-1 px-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-xl font-semibold transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveCroppedImage}
+                className="flex-1 px-6 py-3 bg-red-600 hover:bg-red-700 rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+              >
+                <FaCheck /> Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <button
