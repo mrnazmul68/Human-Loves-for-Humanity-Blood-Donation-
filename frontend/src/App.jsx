@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SignUp from "./pages/SignUp";
@@ -10,6 +11,10 @@ import About from "./pages/About";
 const AppContent = () => {
   const location = useLocation();
   const showNavbar = location.pathname !== "/profile";
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
 
   return (
     <>
