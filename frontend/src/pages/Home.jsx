@@ -36,7 +36,9 @@ const Home = () => {
   }, [location]);
 
   useEffect(() => {
+    if (isLoading) return;
     const c = canvasRef.current;
+    if (!c) return;
     const ctx = c.getContext("2d");
 
     let w = (c.width = window.innerWidth);
@@ -155,7 +157,7 @@ const Home = () => {
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, []);
+  }, [isLoading]);
 
   if (isLoading) {
     return <Loading />;
