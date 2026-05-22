@@ -10,6 +10,7 @@ const Banner = () => {
           className="h-full w-full object-cover object-center"
           src={img}
           alt="MATOMA Blood Donation"
+          loading="lazy"
         />
    
    {/* small card on image */}

@@ -140,13 +140,19 @@ const Navbar = () => {
                       setIsProfileDropdownOpen(!isProfileDropdownOpen)
                     }
                     className="flex items-center gap-3 hover:bg-zinc-800/50 px-3 py-2 rounded-xl transition-colors"
+                    aria-label={isProfileDropdownOpen ? "Close profile menu" : "Open profile menu"}
                   >
                     <div className="w-10 h-10 rounded-full bg-zinc-800 border-2 border-zinc-700 flex items-center justify-center overflow-hidden">
                       {currentUser.profilePicture ? (
                         <img
-                          src={currentUser.profilePicture}
+                          src={
+                            currentUser.profilePicture.includes('cloudinary')
+                              ? currentUser.profilePicture.replace('/upload/', '/upload/w_100,q_auto,f_auto/')
+                              : currentUser.profilePicture
+                          }
                           alt="Profile"
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       ) : (
                         <FaUser className="text-zinc-400" />
@@ -198,12 +204,14 @@ const Navbar = () => {
             <button
               className="md:hidden text-white"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
             >
               <svg
                 className="h-6 w-6"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
+                aria-hidden="true"
               >
                 {isMobileMenuOpen ? (
                   <path
