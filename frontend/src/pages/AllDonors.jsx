@@ -35,32 +35,34 @@ const AllDonors = () => {
   useEffect(() => {
     const bloodGroup = searchParams.get("bloodGroup");
     const upazila = searchParams.get("upazila");
-    if (bloodGroup || upazila) {
-      let params = [];
-      if (bloodGroup) params.push(bloodGroup);
-      if (upazila) params.push(upazila);
-      setSearchQuery(params.join(" "));
+    if (!bloodGroup && !upazila) {
+      setSearchQuery("");
     }
+    setCurrentPage(1);
   }, [searchParams]);
 
   const filteredDonors = donors.filter(
     (donor) => {
-      const matchesName = donor.name.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesBloodGroup = donor.bloodGroup.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesUpazila = (donor.upozila && donor.upozila.toLowerCase().includes(searchQuery.toLowerCase()));
-      
       const bloodGroupParam = searchParams.get("bloodGroup");
       const upazilaParam = searchParams.get("upazila");
       
-      let matchesParams = true;
+      let matches = true;
+      
       if (bloodGroupParam) {
-        matchesParams = matchesParams && donor.bloodGroup === bloodGroupParam;
+        matches = matches && donor.bloodGroup && donor.bloodGroup.toLowerCase() === bloodGroupParam.toLowerCase();
       }
       if (upazilaParam) {
-        matchesParams = matchesParams && (donor.upozila === upazilaParam);
+        matches = matches && (donor.upozila && donor.upozila.toLowerCase() === upazilaParam.toLowerCase());
       }
       
-      return matchesParams && (matchesName || matchesBloodGroup || matchesUpazila);
+      if (searchQuery) {
+        const matchesName = donor.name && donor.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesBloodGroup = donor.bloodGroup && donor.bloodGroup.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesUpazila = (donor.upozila && donor.upozila.toLowerCase().includes(searchQuery.toLowerCase()));
+        matches = matches && (matchesName || matchesBloodGroup || matchesUpazila);
+      }
+      
+      return matches;
     },
   );
 
