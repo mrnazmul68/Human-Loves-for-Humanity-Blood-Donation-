@@ -35,7 +35,7 @@ const Home = () => {
     let h = (c.height = window.innerHeight);
 
     const clearColor = "rgba(0, 0, 0, .1)";
-    const max = 30;
+    const max = 15;
     const drops = [];
 
     function random(min, maxValue) {

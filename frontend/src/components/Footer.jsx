@@ -15,7 +15,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
           <div className="md:col-span-1">
             <Link to="/" className="flex items-center mb-4">
-              <img src={logo} alt="MATOMA" className="h-10 w-10" />
+              <img src={logo} alt="MATOMA" className="h-10 w-10" loading="lazy" />
               <span className="ml-2 text-lg font-bold text-red-200">
                 MATOMA
               </span>
