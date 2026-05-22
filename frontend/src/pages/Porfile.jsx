@@ -7,6 +7,7 @@ import { useNavigate, useBeforeUnload } from "react-router-dom";
 import toast from "react-hot-toast";
 import { API_BASE_URL } from "../config/api";
 import upozilas from "../assets/data/upozilas.js";
+import ProfileSkeleton from "../components/ProfileSkeleton";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -28,6 +29,7 @@ const MatomaProfile = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [isDirty, setIsDirty] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredUpozilas, setFilteredUpozilas] = useState([]);
   const [isUpozilaFocused, setIsUpozilaFocused] = useState(false);
@@ -79,20 +81,42 @@ const MatomaProfile = () => {
   }, [isDirty]);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("currentUser");
-    if (storedUser) {
-      const user = JSON.parse(storedUser);
-      setCurrentUser(user);
-      setFormData({
-        ...formData,
-        ...user,
-        profilePicture: user.profilePicture,
-      });
-      setSearchTerm(user.upozila || "");
-      setIsProfileComplete(checkProfileComplete(user));
-    } else {
-      navigate("/signup");
-    }
+    const fetchUser = async () => {
+      const storedUser = localStorage.getItem("currentUser");
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/users/${user.id}`);
+          const data = await res.json();
+          if (data.success) {
+            setCurrentUser(data.user);
+            setFormData({
+              ...formData,
+              ...data.user,
+              profilePicture: data.user.profilePicture,
+            });
+            setSearchTerm(data.user.upozila || "");
+            setIsProfileComplete(checkProfileComplete(data.user));
+            localStorage.setItem("currentUser", JSON.stringify(data.user));
+          }
+        } catch (err) {
+          console.error("Failed to fetch user:", err);
+          setCurrentUser(user);
+          setFormData({
+            ...formData,
+            ...user,
+            profilePicture: user.profilePicture,
+          });
+          setSearchTerm(user.upozila || "");
+          setIsProfileComplete(checkProfileComplete(user));
+        }
+      } else {
+        navigate("/signup");
+      }
+      setIsFetching(false);
+    };
+
+    fetchUser();
   }, []);
 
   useEffect(() => {
@@ -289,6 +313,10 @@ const MatomaProfile = () => {
     }
   };
 
+  if (isFetching) {
+    return <ProfileSkeleton />;
+  }
+
   return (
     <div className="min-h-screen bg-black text-white pt-24 pb-12 px-4">
       <div className="max-w-7xl mx-auto">
@@ -341,7 +369,7 @@ const MatomaProfile = () => {
                         className="w-5 h-5 text-red-600 bg-zinc-700 border-zinc-600 rounded"
                       />
                       <span className="text-zinc-200 font-medium">
-                        I have donated blood before
+                        I have donated recently
                       </span>
                     </label>
                   </div>
