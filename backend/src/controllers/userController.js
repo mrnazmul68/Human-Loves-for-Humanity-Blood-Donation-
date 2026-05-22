@@ -177,3 +177,48 @@ exports.getDonors = async (req, res) => {
     });
   }
 };
+
+exports.getStats = async (req, res) => {
+  try {
+    const users = await User.find({});
+    
+    const totalUsers = users.length;
+    
+    const activeDonors = users.filter(user => {
+      if (user.isDonor !== 'donor' || !user.bloodGroup || !user.upozila || !user.mobile || !user.age) {
+        return false;
+      }
+
+      if (user.hasDonated && user.lastDonationDate) {
+        const lastDonation = new Date(user.lastDonationDate);
+        const today = new Date();
+        const diffTime = Math.abs(today - lastDonation);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        
+        if (diffDays < 120) {
+          return false;
+        }
+      }
+
+      return true;
+    }).length;
+
+    const totalDonors = users.filter(user => user.isDonor === 'donor').length;
+
+    res.status(200).json({
+      success: true,
+      stats: {
+        activeDonors,
+        totalDonations: totalDonors * 2,
+        totalUsers
+      }
+    });
+
+  } catch (error) {
+    console.error('Get stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};

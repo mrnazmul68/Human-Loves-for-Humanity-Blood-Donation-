@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import StatsSection from "../components/StatsSection";
 import SearchForm from "../components/SearchForm";
@@ -6,20 +6,11 @@ import FeaturedDonors from "../components/FeaturedDonors";
 import HowItWorks from "../components/HowItWorks";
 import Banner from "../components/Banner";
 import Footer from "../components/Footer";
-import Loading from "../components/Loading";
 import { FaHeart } from "react-icons/fa";
 
 const Home = () => {
-  const [isLoading, setIsLoading] = useState(true);
   const canvasRef = useRef(null);
   const location = useLocation();
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 800);
-    return () => clearTimeout(timer);
-  }, []);
 
   useEffect(() => {
     const shouldScroll = sessionStorage.getItem("scrollToSearch");
@@ -36,7 +27,6 @@ const Home = () => {
   }, [location]);
 
   useEffect(() => {
-    if (isLoading) return;
     const c = canvasRef.current;
     if (!c) return;
     const ctx = c.getContext("2d");
@@ -157,11 +147,7 @@ const Home = () => {
       window.removeEventListener("resize", resize);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [isLoading]);
-
-  if (isLoading) {
-    return <Loading />;
-  }
+  }, []);
 
   return (
     <div>
