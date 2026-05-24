@@ -1,7 +1,10 @@
-import { FaPhoneAlt, FaMapMarkerAlt, FaUser, FaWhatsapp } from "react-icons/fa";
+import { FaPhoneAlt, FaMapMarkerAlt, FaUser, FaWhatsapp, FaCopy, FaCheck } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { useState } from "react";
 
 const DonorCard = ({ donor }) => {
+  const [isCopied, setIsCopied] = useState(false);
+  
   const handleBookNow = () => {
     const phone = donor.phone || donor.mobile;
     if (!phone) {
@@ -19,6 +22,22 @@ const DonorCard = ({ donor }) => {
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=Are%20you%20available%20to%20donate%20blood.%20I%20need%20Emergency%20blood.`;
     window.open(whatsappUrl, "_blank");
     toast.success("Opening WhatsApp...");
+  };
+
+  const handleCopyPhone = async () => {
+    const phone = donor.phone || donor.mobile;
+    if (!phone) {
+      toast.error("No phone number available!");
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(phone);
+      setIsCopied(true);
+      toast.success("Phone number copied!");
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      toast.error("Failed to copy phone number!");
+    }
   };
 
   return (
@@ -68,6 +87,13 @@ const DonorCard = ({ donor }) => {
           <div className="flex items-center gap-2">
             <FaPhoneAlt className="text-[#E11D48]" />
             <span>{donor.phone || donor.mobile}</span>
+            <button
+              onClick={handleCopyPhone}
+              className="ml-auto text-gray-400 hover:text-white transition-colors"
+              title="Copy phone number"
+            >
+              {isCopied ? <FaCheck className="text-green-500" /> : <FaCopy />}
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
