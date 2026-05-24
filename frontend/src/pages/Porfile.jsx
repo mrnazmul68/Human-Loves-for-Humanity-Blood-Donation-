@@ -183,7 +183,21 @@ const MatomaProfile = () => {
   }, [isDirty, formData.isDonor]);
 
   const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    let { name, value, type, checked } = e.target;
+    
+    if (name === "mobile") {
+      const digits = value.replace(/\D/g, "");
+      if (digits.length > 0) {
+        if (digits.startsWith("880")) {
+          value = "+" + digits;
+        } else if (digits.startsWith("0")) {
+          value = "+880" + digits.substring(1);
+        } else {
+          value = "+880" + digits;
+        }
+      }
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,

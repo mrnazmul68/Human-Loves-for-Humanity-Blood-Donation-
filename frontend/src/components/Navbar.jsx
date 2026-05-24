@@ -89,7 +89,7 @@ const Navbar = () => {
                 alt="MATOMA"
                 className="h-10 border-2  border-red-500 rounded-full w-10"
                 loading="eager"
-                fetchpriority="high"
+                fetchPriority="high"
               />
               <span className="ml-2 text-lg font-bold text-red-200">
                 MATOMA
@@ -252,7 +252,7 @@ const Navbar = () => {
               onClick={() => setIsMobileMenuOpen(false)}
               className="flex items-center mb-8"
             >
-              <img src={logo} alt="MATOMA" className="h-10 w-10" loading="eager" fetchpriority="high" />
+              <img src={logo} alt="MATOMA" className="h-10 w-10" loading="eager" fetchPriority="high" />
               <span className="ml-2 text-lg font-bold text-red-200">
                 MATOMA
               </span>

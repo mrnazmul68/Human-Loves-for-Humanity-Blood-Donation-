@@ -4,6 +4,7 @@ import DonorCard from "../components/DonorCard";
 import DonorCardSkeleton from "../components/DonorCardSkeleton";
 import toast from "react-hot-toast";
 import { API_BASE_URL } from "../config/api";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 const AllDonors = () => {
   const [donors, setDonors] = useState([]);
@@ -76,6 +77,32 @@ const AllDonors = () => {
 
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
+  const getVisiblePages = () => {
+    const maxVisible = 5;
+    let startPage, endPage;
+
+    if (totalPages <= maxVisible) {
+      startPage = 1;
+      endPage = totalPages;
+    } else {
+      const half = Math.floor(maxVisible / 2);
+      if (currentPage <= half) {
+        startPage = 1;
+        endPage = maxVisible;
+      } else if (currentPage + half >= totalPages) {
+        startPage = totalPages - maxVisible + 1;
+        endPage = totalPages;
+      } else {
+        startPage = currentPage - half;
+        endPage = currentPage + half;
+      }
+    }
+
+    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  };
+
+  const visiblePages = getVisiblePages();
+
   return (
     <div className="min-h-screen bg-black pt-28 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -114,20 +141,44 @@ const AllDonors = () => {
             )}
 
             {totalPages > 1 && (
-              <div className="flex justify-center space-x-2">
-                {Array.from({ length: totalPages }, (_, i) => (
+              <div className="flex justify-center items-center space-x-2">
+                <button
+                  onClick={() => paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`px-4 py-2 rounded-lg transition-colors flex items-center justify-center ${
+                    currentPage === 1
+                      ? "bg-gray-800 text-gray-600 cursor-not-allowed"
+                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  }`}
+                >
+                  <FaChevronLeft />
+                </button>
+
+                {visiblePages.map((pageNumber) => (
                   <button
-                    key={i + 1}
-                    onClick={() => paginate(i + 1)}
+                    key={pageNumber}
+                    onClick={() => paginate(pageNumber)}
                     className={`px-4 py-2 rounded-lg transition-colors ${
-                      currentPage === i + 1
+                      currentPage === pageNumber
                         ? "bg-[#E11D48] text-white"
                         : "bg-gray-800 text-gray-300 hover:bg-gray-700"
                     }`}
                   >
-                    {i + 1}
+                    {pageNumber}
                   </button>
                 ))}
+
+                <button
+                  onClick={() => paginate(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`px-4 py-2 rounded-lg transition-colors flex items-center justify-center ${
+                    currentPage === totalPages
+                      ? "bg-gray-800 text-gray-600 cursor-not-allowed"
+                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  }`}
+                >
+                  <FaChevronRight />
+                </button>
               </div>
             )}
           </>

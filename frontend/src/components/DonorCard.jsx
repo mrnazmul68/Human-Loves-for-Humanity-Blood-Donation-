@@ -9,7 +9,13 @@ const DonorCard = ({ donor }) => {
       return;
     }
 
-    const cleanPhone = phone.replace(/\D/g, "");
+    let cleanPhone = phone.replace(/\D/g, "");
+    if (cleanPhone.startsWith("0")) {
+      cleanPhone = "880" + cleanPhone.substring(1);
+    } else if (!cleanPhone.startsWith("880")) {
+      cleanPhone = "880" + cleanPhone;
+    }
+    
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=Are%20you%20available%20to%20donate%20blood.%20I%20need%20Emergency%20blood.`;
     window.open(whatsappUrl, "_blank");
     toast.success("Opening WhatsApp...");
@@ -26,8 +32,12 @@ const DonorCard = ({ donor }) => {
         <div className="flex items-center gap-4 mb-5">
           <img
             src={
-              (donor.profilePicture && donor.profilePicture.includes('cloudinary'))
-                ? donor.profilePicture.replace('/upload/', '/upload/w_800,q_auto,f_auto/')
+              donor.profilePicture &&
+              donor.profilePicture.includes("cloudinary")
+                ? donor.profilePicture.replace(
+                    "/upload/",
+                    "/upload/w_150,q_auto,f_auto/",
+                  )
                 : donor.profilePicture ||
                   donor.image ||
                   `https://ui-avatars.com/api/?name=${encodeURIComponent(
